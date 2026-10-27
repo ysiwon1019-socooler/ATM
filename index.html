@@ -6,153 +6,111 @@
 <title>생신 축하 ATM</title>
 <style>
   :root {
-    --body: #1d2a38;
-    --machine: #c9ced6;
-    --machine-dark: #9aa1ab;
+    --body: #11161d;
     --screen: #0b3d5c;
     --screen-light: #12557f;
     --text: #e8f4ff;
     --accent: #ffd34d;
     --ok: #2fb36b;
     --no: #d94848;
-    --key: #3a4552;
+    --go: #2d7fd3;
+    --heart: #ff4d6d;
   }
   /* ATM 화면은 항상 어두운 테마를 유지합니다 */
   @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) { --body: #1d2a38; }
+    :root:not([data-theme="light"]) { --body: #11161d; }
   }
-  :root[data-theme="dark"] { --body: #1d2a38; }
+  :root[data-theme="dark"] { --body: #11161d; }
   * { box-sizing: border-box; }
   html, body { margin: 0; height: 100%; }
   body {
-    background: radial-gradient(circle at top, #2c3e52, var(--body));
+    background: var(--body);
     font-family: "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", sans-serif;
     display: flex; align-items: center; justify-content: center;
     padding: 16px;
+    overflow: hidden;
     -webkit-tap-highlight-color: transparent;
     user-select: none;
   }
-  .atm {
-    width: 100%; max-width: 480px;
-    background: linear-gradient(180deg, #dfe3e8, var(--machine));
-    border-radius: 22px;
-    padding: 18px 18px 22px;
-    box-shadow: 0 20px 50px rgba(0,0,0,.5), inset 0 2px 0 #fff;
-  }
-  .brand {
-    text-align: center; font-weight: 800; letter-spacing: 2px;
-    color: #234; font-size: 15px; margin-bottom: 10px;
-  }
-  .brand span { color: #c0392b; }
+  /* 화면 크기에 맞춰 16:9 비율을 유지 */
   .screen {
+    width: min(100%, calc((100vh - 32px) * 16 / 9));
+    aspect-ratio: 16 / 9;
+    font-size: clamp(8px, min(1.6vw, 2.85vh), 22px);
     background: linear-gradient(160deg, var(--screen-light), var(--screen));
-    border: 10px solid #222;
-    border-radius: 10px;
-    min-height: 330px;
+    border: 0.8em solid #222;
+    border-radius: 0.8em;
     color: var(--text);
-    padding: 22px 18px;
-    display: flex; flex-direction: column; justify-content: space-between;
-    box-shadow: inset 0 0 30px rgba(0,0,0,.5);
+    padding: 1.6em 2.4em;
+    display: flex; flex-direction: column;
+    box-shadow: 0 1.5em 4em rgba(0,0,0,.6), inset 0 0 3em rgba(0,0,0,.5);
     position: relative; overflow: hidden;
   }
   .screen::after {
     content: ""; position: absolute; inset: 0; pointer-events: none;
     background: repeating-linear-gradient(0deg, rgba(255,255,255,.03) 0 2px, transparent 2px 4px);
   }
-  .step { font-size: 13px; color: var(--accent); text-align: right; min-height: 18px; }
+  .top { display: flex; justify-content: space-between; font-size: 1em; }
+  .brand { font-weight: 800; letter-spacing: .15em; opacity: .85; }
+  .brand span { color: var(--accent); }
+  .step { color: var(--accent); }
   .msg {
-    flex: 1; display: flex; flex-direction: column; justify-content: center;
-    text-align: center; font-size: 21px; line-height: 1.55; word-break: keep-all;
+    flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center;
+    text-align: center; font-size: 2.2em; line-height: 1.5; word-break: keep-all;
   }
-  .msg small { display: block; font-size: 14px; opacity: .8; margin-top: 10px; }
-  .msg .big { font-size: 26px; font-weight: 800; color: var(--accent); }
-  .amount {
-    margin: 14px auto 0; background: #062c43; border: 2px solid var(--accent);
-    border-radius: 8px; padding: 10px 14px; font-size: 26px; font-weight: 700;
-    min-width: 70%; text-align: right; font-variant-numeric: tabular-nums;
+  .msg small { display: block; font-size: .55em; opacity: .8; margin-top: .6em; }
+  .msg .big { font-size: 1.3em; font-weight: 800; color: var(--accent); }
+  .heart-row { display: flex; align-items: center; justify-content: center; gap: 1em; }
+  .heart-btn {
+    font-size: 2em; width: 2.2em; height: 2.2em; border-radius: 50%;
+    border: .08em solid #fff; background: var(--heart); color: #fff; cursor: pointer;
+    box-shadow: 0 .15em 0 rgba(0,0,0,.35); flex: none; line-height: 1;
+    font-family: inherit;
   }
-  .choices { display: flex; gap: 12px; margin-top: 16px; }
+  .heart-btn:active { transform: scale(.9); }
+  .heart-count { font-size: .9em; color: var(--accent); font-weight: 800; margin-top: .3em; font-variant-numeric: tabular-nums; }
+  .float-heart { position: absolute; pointer-events: none; font-size: 2.4em; animation: up 1s ease-out forwards; z-index: 5; }
+  @keyframes up { to { transform: translateY(-5em) scale(1.4); opacity: 0; } }
+  .choices { display: flex; gap: 1.2em; justify-content: center; }
   .choices button {
-    flex: 1; font-size: 20px; font-weight: 700; padding: 14px 0;
-    border: none; border-radius: 8px; color: #fff; cursor: pointer;
-    font-family: inherit; box-shadow: 0 4px 0 rgba(0,0,0,.35);
+    width: 30%; font-size: 1.8em; font-weight: 700; padding: .55em 0;
+    border: none; border-radius: .35em; color: #fff; cursor: pointer;
+    font-family: inherit; box-shadow: 0 .2em 0 rgba(0,0,0,.35);
   }
-  .choices button:active { transform: translateY(3px); box-shadow: 0 1px 0 rgba(0,0,0,.35); }
+  .choices button:active { transform: translateY(.12em); box-shadow: 0 .05em 0 rgba(0,0,0,.35); }
   .yes { background: var(--ok); }
   .no { background: var(--no); }
-  .go { background: #2d7fd3; }
+  .go { background: var(--go); }
   .shake { animation: shake .4s; }
   @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-8px)} 75%{transform:translateX(8px)} }
   .blink { animation: blink 1.2s infinite; }
   @keyframes blink { 50% { opacity: .35; } }
-
-  .lower { display: flex; gap: 14px; margin-top: 16px; align-items: flex-start; }
-  .keypad {
-    flex: 1; display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px;
-    background: #2b333d; padding: 10px; border-radius: 10px;
-  }
-  .keypad button {
-    background: linear-gradient(180deg, #56616e, var(--key)); color: #fff;
-    border: none; border-radius: 6px; font-size: 19px; font-weight: 700;
-    padding: 11px 0; cursor: pointer; font-family: inherit;
-    box-shadow: 0 3px 0 #111;
-  }
-  .keypad button:active { transform: translateY(2px); box-shadow: 0 1px 0 #111; }
-  .keypad .k-clear { background: linear-gradient(180deg, #e7c23a, #b8961c); color: #222; font-size: 14px; }
-  .keypad .k-ok { background: linear-gradient(180deg, #3cc47b, #23864f); font-size: 14px; }
-  .side { width: 120px; display: flex; flex-direction: column; gap: 12px; }
-  .slot {
-    background: #2b333d; border-radius: 8px; padding: 10px 8px; text-align: center;
-    color: #aeb7c2; font-size: 11px; font-weight: 700;
-  }
-  .slot .hole { height: 8px; background: #000; border-radius: 4px; margin-top: 6px; position: relative; overflow: hidden; }
-  .slot.active { color: var(--accent); }
-  .slot.active .hole { box-shadow: 0 0 10px 2px #3cff8f; background: #0a2; }
-  .cash .hole { height: 14px; }
-
   .confetti { position: fixed; top: -20px; width: 10px; height: 14px; pointer-events: none; z-index: 10; animation: fall linear forwards; }
   @keyframes fall { to { transform: translateY(110vh) rotate(720deg); } }
-
-  @media (max-width: 380px) {
-    .side { width: 92px; }
-    .msg { font-size: 18px; }
-  }
 </style>
 </head>
 <body>
-<div class="atm">
-  <div class="brand">💳 <span>HAPPY</span> BIRTHDAY BANK 💳</div>
-  <div class="screen" id="screen">
+<div class="screen" id="screen">
+  <div class="top">
+    <div class="brand">💳 <span>HAPPY</span> BIRTHDAY BANK</div>
     <div class="step" id="step"></div>
-    <div class="msg" id="msg"></div>
-    <div id="controls"></div>
   </div>
-  <div class="lower">
-    <div class="keypad" id="keypad">
-      <button data-k="1">1</button><button data-k="2">2</button><button data-k="3">3</button>
-      <button data-k="4">4</button><button data-k="5">5</button><button data-k="6">6</button>
-      <button data-k="7">7</button><button data-k="8">8</button><button data-k="9">9</button>
-      <button data-k="clear" class="k-clear">정정</button><button data-k="0">0</button><button data-k="ok" class="k-ok">확인</button>
-    </div>
-    <div class="side">
-      <div class="slot" id="cardSlot">카드 투입구<div class="hole"></div></div>
-      <div class="slot cash" id="cashSlot">현금 출금구<div class="hole"></div></div>
-    </div>
-  </div>
+  <div class="msg" id="msg"></div>
+  <div id="controls"></div>
 </div>
 
 <script>
   const questions = [
-    { type: "yn", text: "아버님의 성함이<br><span class='big'>'양재곤'</span><br>맞으십니까?", answer: true },
-    { type: "yn", text: "아버님 칠순을 위한 여행지가<br><span class='big'>'강원도'</span><br>맞으십니까?", answer: true },
-    { type: "yn", text: "아버님의 자녀가<br><span class='big'>3명</span><br>맞으십니까?", answer: true },
-    { type: "amount", text: "자녀들에게 받고 싶은<br>용돈의 액수는 얼마입니까?" },
-    { type: "yn", text: "오늘이<br><span class='big'>생신</span>이십니까?", answer: true },
+    { type: "yn", text: "아버님의 성함이 <span class='big'>'양재곤'</span><br>맞으십니까?", answer: true },
+    { type: "yn", text: "아버님 칠순을 위한 여행지가 <span class='big'>'강원도'</span><br>맞으십니까?", answer: true },
+    { type: "yn", text: "아버님의 자녀가 <span class='big'>3명</span><br>맞으십니까?", answer: true },
+    { type: "heart", text: "가족을 사랑하는 만큼<br>하트를 눌러주세요." },
+    { type: "yn", text: "오늘이 <span class='big'>생신</span>이십니까?", answer: true },
   ];
 
   const $ = id => document.getElementById(id);
   const screen = $("screen"), stepEl = $("step"), msgEl = $("msg"), controls = $("controls");
-  let current = -1, amount = "";
+  let current = -1, hearts = 0;
 
   function render(stepText, html, controlsHtml) {
     stepEl.textContent = stepText;
@@ -160,10 +118,13 @@
     controls.innerHTML = controlsHtml || "";
   }
 
+  function shake() {
+    screen.classList.remove("shake"); void screen.offsetWidth; screen.classList.add("shake");
+  }
+
   function showStart() {
-    current = -1; amount = "";
-    $("cardSlot").classList.remove("active");
-    render("", "어서 오십시오.<br><span class='big'>본인 확인</span>을 시작합니다.<small class='blink'>화면의 [시작] 버튼을 눌러 주십시오</small>",
+    current = -1; hearts = 0;
+    render("", "어서 오십시오.<br><span class='big'>본인 확인</span>을 시작합니다.<small class='blink'>[시작] 버튼을 눌러 주십시오</small>",
       "<div class='choices'><button class='go' onclick='next()'>시작</button></div>");
   }
 
@@ -176,52 +137,46 @@
       render(step, q.text,
         "<div class='choices'><button class='yes' onclick='answer(true)'>예</button><button class='no' onclick='answer(false)'>아니오</button></div>");
     } else {
-      amount = "";
-      render(step, q.text + "<div class='amount' id='amount'>0 원</div><small>아래 숫자 버튼으로 입력 후 [확인]을 눌러 주십시오</small>",
-        "<div class='choices'><button class='go' onclick='submitAmount()'>확인</button></div>");
+      hearts = 0;
+      render(step,
+        `<div class='heart-row'><div>${q.text}</div><button class='heart-btn' id='heartBtn' aria-label='하트'>♥</button></div>
+         <div class='heart-count' id='heartCount'>♥ 0</div>`,
+        "<div class='choices'><button class='go' onclick='submitHearts()'>확인</button></div>");
+      $("heartBtn").addEventListener("click", addHeart);
     }
   }
 
   function answer(val) {
-    const q = questions[current];
-    if (val === q.answer) return next();
-    screen.classList.remove("shake"); void screen.offsetWidth; screen.classList.add("shake");
+    if (val === questions[current].answer) return next();
+    shake();
     render(stepEl.textContent, "⚠️ 본인 확인에 실패했습니다.<small>다시 한 번 신중하게 선택해 주십시오.</small>",
       "<div class='choices'><button class='go' onclick='retry()'>다시 시도</button></div>");
   }
 
   function retry() { current--; next(); }
 
-  function updateAmount() {
-    const el = $("amount");
-    if (el) el.textContent = (amount ? Number(amount).toLocaleString("ko-KR") : "0") + " 원";
+  function addHeart(e) {
+    hearts++;
+    $("heartCount").textContent = "♥ " + hearts.toLocaleString("ko-KR");
+    const r = screen.getBoundingClientRect(), b = e.currentTarget.getBoundingClientRect();
+    const h = document.createElement("div");
+    h.className = "float-heart";
+    h.textContent = ["❤️", "💖", "💗", "💕"][hearts % 4];
+    h.style.left = (b.left - r.left + b.width / 2 - 20 + (Math.random() * 40 - 20)) + "px";
+    h.style.top = (b.top - r.top) + "px";
+    screen.appendChild(h);
+    setTimeout(() => h.remove(), 1000);
   }
 
-  function submitAmount() {
-    if (!amount || Number(amount) === 0) {
-      screen.classList.remove("shake"); void screen.offsetWidth; screen.classList.add("shake");
-      return;
-    }
+  function submitHearts() {
+    if (hearts === 0) return shake();
     next();
   }
 
-  $("keypad").addEventListener("click", e => {
-    const k = e.target.dataset.k;
-    if (!k) return;
-    const q = questions[current];
-    if (!q || q.type !== "amount") return;
-    if (k === "clear") amount = "";
-    else if (k === "ok") return submitAmount();
-    else if (amount.length < 12) amount = (amount + k).replace(/^0+/, "");
-    updateAmount();
-  });
-
   function showFinal() {
-    const won = Number(amount).toLocaleString("ko-KR");
     render("본인 확인 완료 ✔",
-      `🎉🎂🎉<br><span class='big'>생신을 축하드립니다!</span><br>카드를 꽂으시면 인출을 시작합니다.<small>요청 금액: ${won} 원</small>`,
+      `🎉🎂🎉<br><span class='big'>생신을 축하드립니다!</span><br>카드를 꽂으시면 인출을 시작합니다.<small>보내주신 사랑: ♥ ${hearts.toLocaleString("ko-KR")}개</small>`,
       "<div class='choices'><button class='go' onclick='showStart()'>처음으로</button></div>");
-    $("cardSlot").classList.add("active");
     confetti();
   }
 

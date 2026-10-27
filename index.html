@@ -189,8 +189,7 @@
   }
 
   function playVideo() {
-    render("축하 영상 🎬", `<video id='video' src='${VIDEO_SRC}' playsinline controls></video>`,
-      "<div class='choices'><button class='go' onclick='showFinal()'>건너뛰기</button></div>");
+    render("축하 영상 🎬", `<video id='video' src='${VIDEO_SRC}' playsinline controls></video>`);
     const v = $("video");
     v.addEventListener("ended", showFinal);
     v.play().catch(() => {});

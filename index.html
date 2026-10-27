@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>생신 축하 ATM</title>
+<style>
+  :root {
+    --body: #1d2a38;
+    --machine: #c9ced6;
+    --machine-dark: #9aa1ab;
+    --screen: #0b3d5c;
+    --screen-light: #12557f;
+    --text: #e8f4ff;
+    --accent: #ffd34d;
+    --ok: #2fb36b;
+    --no: #d94848;
+    --key: #3a4552;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; }
+  body {
+    background: radial-gradient(circle at top, #2c3e52, var(--body));
+    font-family: "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", sans-serif;
+    display: flex; align-items: center; justify-content: center;
+    padding: 16px;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+  }
+  .atm {
+    width: 100%; max-width: 480px;
+    background: linear-gradient(180deg, #dfe3e8, var(--machine));
+    border-radius: 22px;
+    padding: 18px 18px 22px;
+    box-shadow: 0 20px 50px rgba(0,0,0,.5), inset 0 2px 0 #fff;
+  }
+  .brand {
+    text-align: center; font-weight: 800; letter-spacing: 2px;
+    color: #234; font-size: 15px; margin-bottom: 10px;
+  }
+  .brand span { color: #c0392b; }
+  .screen {
+    background: linear-gradient(160deg, var(--screen-light), var(--screen));
+    border: 10px solid #222;
+    border-radius: 10px;
+    min-height: 330px;
+    color: var(--text);
+    padding: 22px 18px;
+    display: flex; flex-direction: column; justify-content: space-between;
+    box-shadow: inset 0 0 30px rgba(0,0,0,.5);
+    position: relative; overflow: hidden;
+  }
+  .screen::after {
+    content: ""; position: absolute; inset: 0; pointer-events: none;
+    background: repeating-linear-gradient(0deg, rgba(255,255,255,.03) 0 2px, transparent 2px 4px);
+  }
+  .step { font-size: 13px; color: var(--accent); text-align: right; min-height: 18px; }
+  .msg {
+    flex: 1; display: flex; flex-direction: column; justify-content: center;
+    text-align: center; font-size: 21px; line-height: 1.55; word-break: keep-all;
+  }
+  .msg small { display: block; font-size: 14px; opacity: .8; margin-top: 10px; }
+  .msg .big { font-size: 26px; font-weight: 800; color: var(--accent); }
+  .amount {
+    margin: 14px auto 0; background: #062c43; border: 2px solid var(--accent);
+    border-radius: 8px; padding: 10px 14px; font-size: 26px; font-weight: 700;
+    min-width: 70%; text-align: right; font-variant-numeric: tabular-nums;
+  }
+  .choices { display: flex; gap: 12px; margin-top: 16px; }
+  .choices button {
+    flex: 1; font-size: 20px; font-weight: 700; padding: 14px 0;
+    border: none; border-radius: 8px; color: #fff; cursor: pointer;
+    font-family: inherit; box-shadow: 0 4px 0 rgba(0,0,0,.35);
+  }
+  .choices button:active { transform: translateY(3px); box-shadow: 0 1px 0 rgba(0,0,0,.35); }
+  .yes { background: var(--ok); }
+  .no { background: var(--no); }
+  .go { background: #2d7fd3; }
+  .shake { animation: shake .4s; }
+  @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-8px)} 75%{transform:translateX(8px)} }
+  .blink { animation: blink 1.2s infinite; }
+  @keyframes blink { 50% { opacity: .35; } }
+
+  .lower { display: flex; gap: 14px; margin-top: 16px; align-items: flex-start; }
+  .keypad {
+    flex: 1; display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px;
+    background: #2b333d; padding: 10px; border-radius: 10px;
+  }
+  .keypad button {
+    background: linear-gradient(180deg, #56616e, var(--key)); color: #fff;
+    border: none; border-radius: 6px; font-size: 19px; font-weight: 700;
+    padding: 11px 0; cursor: pointer; font-family: inherit;
+    box-shadow: 0 3px 0 #111;
+  }
+  .keypad button:active { transform: translateY(2px); box-shadow: 0 1px 0 #111; }
+  .keypad .k-clear { background: linear-gradient(180deg, #e7c23a, #b8961c); color: #222; font-size: 14px; }
+  .keypad .k-ok { background: linear-gradient(180deg, #3cc47b, #23864f); font-size: 14px; }
+  .side { width: 120px; display: flex; flex-direction: column; gap: 12px; }
+  .slot {
+    background: #2b333d; border-radius: 8px; padding: 10px 8px; text-align: center;
+    color: #aeb7c2; font-size: 11px; font-weight: 700;
+  }
+  .slot .hole { height: 8px; background: #000; border-radius: 4px; margin-top: 6px; position: relative; overflow: hidden; }
+  .slot.active { color: var(--accent); }
+  .slot.active .hole { box-shadow: 0 0 10px 2px #3cff8f; background: #0a2; }
+  .cash .hole { height: 14px; }
+
+  .confetti { position: fixed; top: -20px; width: 10px; height: 14px; pointer-events: none; z-index: 10; animation: fall linear forwards; }
+  @keyframes fall { to { transform: translateY(110vh) rotate(720deg); } }
+
+  @media (max-width: 380px) {
+    .side { width: 92px; }
+    .msg { font-size: 18px; }
+  }
+</style>
+</head>
+<body>
+<div class="atm">
+  <div class="brand">💳 <span>HAPPY</span> BIRTHDAY BANK 💳</div>
+  <div class="screen" id="screen">
+    <div class="step" id="step"></div>
+    <div class="msg" id="msg"></div>
+    <div id="controls"></div>
+  </div>
+  <div class="lower">
+    <div class="keypad" id="keypad">
+      <button data-k="1">1</button><button data-k="2">2</button><button data-k="3">3</button>
+      <button data-k="4">4</button><button data-k="5">5</button><button data-k="6">6</button>
+      <button data-k="7">7</button><button data-k="8">8</button><button data-k="9">9</button>
+      <button data-k="clear" class="k-clear">정정</button><button data-k="0">0</button><button data-k="ok" class="k-ok">확인</button>
+    </div>
+    <div class="side">
+      <div class="slot" id="cardSlot">카드 투입구<div class="hole"></div></div>
+      <div class="slot cash" id="cashSlot">현금 출금구<div class="hole"></div></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const questions = [
+    { type: "yn", text: "아버님의 성함이<br><span class='big'>'양재곤'</span><br>맞으십니까?", answer: true },
+    { type: "yn", text: "아버님 칠순을 위한 여행지가<br><span class='big'>'강원도'</span><br>맞으십니까?", answer: true },
+    { type: "yn", text: "아버님의 자녀가<br><span class='big'>3명</span><br>맞으십니까?", answer: true },
+    { type: "amount", text: "자녀들에게 받고 싶은<br>용돈의 액수는 얼마입니까?" },
+    { type: "yn", text: "오늘이<br><span class='big'>생신</span>이십니까?", answer: true },
+  ];
+
+  const $ = id => document.getElementById(id);
+  const screen = $("screen"), stepEl = $("step"), msgEl = $("msg"), controls = $("controls");
+  let current = -1, amount = "";
+
+  function render(stepText, html, controlsHtml) {
+    stepEl.textContent = stepText;
+    msgEl.innerHTML = html;
+    controls.innerHTML = controlsHtml || "";
+  }
+
+  function showStart() {
+    current = -1; amount = "";
+    $("cardSlot").classList.remove("active");
+    render("", "어서 오십시오.<br><span class='big'>본인 확인</span>을 시작합니다.<small class='blink'>화면의 [시작] 버튼을 눌러 주십시오</small>",
+      "<div class='choices'><button class='go' onclick='next()'>시작</button></div>");
+  }
+
+  function next() {
+    current++;
+    if (current >= questions.length) return showFinal();
+    const q = questions[current];
+    const step = `본인 확인 ${current + 1} / ${questions.length}`;
+    if (q.type === "yn") {
+      render(step, q.text,
+        "<div class='choices'><button class='yes' onclick='answer(true)'>예</button><button class='no' onclick='answer(false)'>아니오</button></div>");
+    } else {
+      amount = "";
+      render(step, q.text + "<div class='amount' id='amount'>0 원</div><small>아래 숫자 버튼으로 입력 후 [확인]을 눌러 주십시오</small>",
+        "<div class='choices'><button class='go' onclick='submitAmount()'>확인</button></div>");
+    }
+  }
+
+  function answer(val) {
+    const q = questions[current];
+    if (val === q.answer) return next();
+    screen.classList.remove("shake"); void screen.offsetWidth; screen.classList.add("shake");
+    render(stepEl.textContent, "⚠️ 본인 확인에 실패했습니다.<small>다시 한 번 신중하게 선택해 주십시오.</small>",
+      "<div class='choices'><button class='go' onclick='retry()'>다시 시도</button></div>");
+  }
+
+  function retry() { current--; next(); }
+
+  function updateAmount() {
+    const el = $("amount");
+    if (el) el.textContent = (amount ? Number(amount).toLocaleString("ko-KR") : "0") + " 원";
+  }
+
+  function submitAmount() {
+    if (!amount || Number(amount) === 0) {
+      screen.classList.remove("shake"); void screen.offsetWidth; screen.classList.add("shake");
+      return;
+    }
+    next();
+  }
+
+  $("keypad").addEventListener("click", e => {
+    const k = e.target.dataset.k;
+    if (!k) return;
+    const q = questions[current];
+    if (!q || q.type !== "amount") return;
+    if (k === "clear") amount = "";
+    else if (k === "ok") return submitAmount();
+    else if (amount.length < 12) amount = (amount + k).replace(/^0+/, "");
+    updateAmount();
+  });
+
+  function showFinal() {
+    const won = Number(amount).toLocaleString("ko-KR");
+    render("본인 확인 완료 ✔",
+      `🎉🎂🎉<br><span class='big'>생신을 축하드립니다!</span><br>카드를 꽂으시면 인출을 시작합니다.<small>요청 금액: ${won} 원</small>`,
+      "<div class='choices'><button class='go' onclick='showStart()'>처음으로</button></div>");
+    $("cardSlot").classList.add("active");
+    confetti();
+  }
+
+  function confetti() {
+    const colors = ["#ffd34d", "#ff6b6b", "#4dd0ff", "#7cff8f", "#ff9de2"];
+    for (let i = 0; i < 80; i++) {
+      const c = document.createElement("div");
+      c.className = "confetti";
+      c.style.left = Math.random() * 100 + "vw";
+      c.style.background = colors[i % colors.length];
+      c.style.animationDuration = 2.5 + Math.random() * 2.5 + "s";
+      c.style.animationDelay = Math.random() * 1.5 + "s";
+      document.body.appendChild(c);
+      setTimeout(() => c.remove(), 6500);
+    }
+  }
+
+  showStart();
+</script>
+</body>
+</html>

@@ -68,6 +68,7 @@
     font-family: inherit;
   }
   .heart-btn:active { transform: scale(.9); }
+  .heart-btn.full { opacity: .5; cursor: default; transform: none; }
   .heart-count { font-size: .9em; color: var(--accent); font-weight: 800; margin-top: .3em; font-variant-numeric: tabular-nums; }
   .float-heart { position: absolute; pointer-events: none; font-size: 2.4em; animation: up 1s ease-out forwards; z-index: 5; }
   @keyframes up { to { transform: translateY(-5em) scale(1.4); opacity: 0; } }
@@ -110,6 +111,7 @@
 
   const $ = id => document.getElementById(id);
   const screen = $("screen"), stepEl = $("step"), msgEl = $("msg"), controls = $("controls");
+  const MAX_HEARTS = 100;
   let current = -1, hearts = 0;
 
   function render(stepText, html, controlsHtml) {
@@ -156,8 +158,10 @@
   function retry() { current--; next(); }
 
   function addHeart(e) {
+    if (hearts >= MAX_HEARTS) return;
     hearts++;
-    $("heartCount").textContent = "♥ " + hearts.toLocaleString("ko-KR");
+    $("heartCount").textContent = "♥ " + hearts + (hearts === MAX_HEARTS ? " (최대)" : "");
+    if (hearts === MAX_HEARTS) e.currentTarget.classList.add("full");
     const r = screen.getBoundingClientRect(), b = e.currentTarget.getBoundingClientRect();
     const h = document.createElement("div");
     h.className = "float-heart";
@@ -175,7 +179,7 @@
 
   function showFinal() {
     render("본인 확인 완료 ✔",
-      `🎉🎂🎉<br><span class='big'>생신을 축하드립니다!</span><br>카드를 꽂으시면 인출을 시작합니다.<small>보내주신 사랑: ♥ ${hearts.toLocaleString("ko-KR")}개</small>`,
+      `🎉🎂🎉<br><span class='big'>생신을 축하드립니다!</span><br>카드를 꽂으시면 인출을 시작합니다.<small>보내주신 사랑: ♥ ${hearts}개</small>`,
       "<div class='choices'><button class='go' onclick='showStart()'>처음으로</button></div>");
     confetti();
   }

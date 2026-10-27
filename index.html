@@ -17,6 +17,11 @@
     --no: #d94848;
     --key: #3a4552;
   }
+  /* ATM 화면은 항상 어두운 테마를 유지합니다 */
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --body: #1d2a38; }
+  }
+  :root[data-theme="dark"] { --body: #1d2a38; }
   * { box-sizing: border-box; }
   html, body { margin: 0; height: 100%; }
   body {

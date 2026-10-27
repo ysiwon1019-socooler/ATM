@@ -69,7 +69,6 @@
   }
   .heart-btn:active { transform: scale(.9); }
   .heart-btn.full { opacity: .5; cursor: default; transform: none; }
-  .heart-count { font-size: .9em; color: var(--accent); font-weight: 800; margin-top: .3em; font-variant-numeric: tabular-nums; }
   .float-heart { position: absolute; pointer-events: none; font-size: 2.4em; animation: up 1s ease-out forwards; z-index: 5; }
   @keyframes up { to { transform: translateY(-5em) scale(1.4); opacity: 0; } }
   .choices { display: flex; gap: 1.2em; justify-content: center; }
@@ -111,7 +110,7 @@
 
   const $ = id => document.getElementById(id);
   const screen = $("screen"), stepEl = $("step"), msgEl = $("msg"), controls = $("controls");
-  const MAX_HEARTS = 100;
+  const HEARTS_TO_PASS = 10;
   let current = -1, hearts = 0;
 
   function render(stepText, html, controlsHtml) {
@@ -141,9 +140,7 @@
     } else {
       hearts = 0;
       render(step,
-        `<div class='heart-row'><div>${q.text}</div><button class='heart-btn' id='heartBtn' aria-label='하트'>♥</button></div>
-         <div class='heart-count' id='heartCount'>♥ 0</div>`,
-        "<div class='choices'><button class='go' onclick='submitHearts()'>확인</button></div>");
+        `<div class='heart-row'><div>${q.text}</div><button class='heart-btn' id='heartBtn' aria-label='하트'>♥</button></div>`);
       $("heartBtn").addEventListener("click", addHeart);
     }
   }
@@ -158,10 +155,12 @@
   function retry() { current--; next(); }
 
   function addHeart(e) {
-    if (hearts >= MAX_HEARTS) return;
+    if (hearts >= HEARTS_TO_PASS) return;
     hearts++;
-    $("heartCount").textContent = "♥ " + hearts + (hearts === MAX_HEARTS ? " (최대)" : "");
-    if (hearts === MAX_HEARTS) e.currentTarget.classList.add("full");
+    if (hearts === HEARTS_TO_PASS) {
+      e.currentTarget.classList.add("full");
+      setTimeout(next, 900);
+    }
     const r = screen.getBoundingClientRect(), b = e.currentTarget.getBoundingClientRect();
     const h = document.createElement("div");
     h.className = "float-heart";
@@ -172,14 +171,9 @@
     setTimeout(() => h.remove(), 1000);
   }
 
-  function submitHearts() {
-    if (hearts === 0) return shake();
-    next();
-  }
-
   function showFinal() {
     render("본인 확인 완료 ✔",
-      `🎉🎂🎉<br><span class='big'>생신을 축하드립니다!</span><br>카드를 꽂으시면 인출을 시작합니다.<small>보내주신 사랑: ♥ ${hearts}개</small>`,
+      `🎉🎂🎉<br><span class='big'>생신을 축하드립니다!</span><br>카드를 꽂으시면 인출을 시작합니다.<small>가족의 사랑을 가득 담았습니다 💖</small>`,
       "<div class='choices'><button class='go' onclick='showStart()'>처음으로</button></div>");
     confetti();
   }

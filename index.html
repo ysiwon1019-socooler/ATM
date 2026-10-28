@@ -122,7 +122,7 @@
   const HEARTS_TO_PASS = 10;
   // Claude 배포 페이지에서는 업로드한 영상을, 깃허브 페이지나 내 컴퓨터에서는 옆에 둔 파일을 재생
   const isLocalCopy = location.protocol === "file:" || location.hostname.endsWith("github.io");
-  const VIDEO_SRC = isLocalCopy ? "birthday.mp4" : "/_blob/d64e7af4d58802d901d68cc51ccd8df8";
+  const VIDEO_SRC = isLocalCopy ? "birthday.mp4?v=2" : "/_blob/7c341b121e6a3d0d845ff537ec065859";
   let current = -1, hearts = 0;
 
   function render(stepText, html, controlsHtml) {
